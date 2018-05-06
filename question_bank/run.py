@@ -23,7 +23,6 @@ for course in selected_courses:
         for i in range(0, len(questions_json)):
             save_data = SaveAnswer.get_save_data(file_path, questions_detials[i], questions_json[i], save_data)
             SaveAnswer.save_answer(save_url, save_data, questions_json[i], config)
-            print(str(save_data) + " " + str(questions_detials[i]))
         SaveAnswer.submit_answer(submit_url, is_submit)
         print("是否继续，退出输入q")
         q = input()
