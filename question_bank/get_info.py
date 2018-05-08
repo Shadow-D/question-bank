@@ -33,13 +33,13 @@ class GetInfo:
                 return courses[1]
             elif not len(i) == 1:  # 长度一位
                 print("请检查长度")
-                return GetInfo.select_courses()
+                return GetInfo.select_courses(courses)
             elif not len(number_pattern.findall(i)) == 1:  # 数字
                 print("请输入数字")
-                return GetInfo.select_courses()
+                return GetInfo.select_courses(courses)
             elif int(i) > courses_number:  # 在选项中
                 print("请输入正确选项")
-                return GetInfo.select_courses()
+                return GetInfo.select_courses(courses)
 
         # 判断是否选择全部
         for i in input_list:
@@ -98,13 +98,16 @@ class GetInfo:
         question_bank_url_pattern = re.compile("student/resource/index\\.do\\?[0-9]{13}&&teachingTaskId=[0-9]+&taskId=[0-9]+&history=false")  # 题库页面链接
         exercises_url_pattern = re.compile("student/assignment/manageAssignment\\.do\\?[0-9]{13}&method=doAssignment&assignmentId=[0-9]+&taskId=[0-9]+&history=false")  # 练习页面
         exam_url_pattern = re.compile("student/exam/manageExam\\.do\\?[0-9]{13}&method=doExam&examId=[0-9]+&taskId=[0-9]+&history=false")  # 考试页面
+        discuss_url_pattern = re.compile("student/bbs/index\\.do\\?[0-9]{13}&teachingTaskId=[0-9]+")  # 讨论页面
 
+        # 保存答案参数
         save_data = {}
 
         # 进入任务页面
         req = urllib.request.Request(hfut.Hfut.base_url + course_url, headers=hfut.Hfut.header)
         html = hfut.Hfut.opener.open(req).read().decode('utf-8')
-        target_url = str(assignment_url_pattern.search(html).group(0))
+        target_url = assignment_url_pattern.search(html).group(0)
+        disscuss_url = discuss_url_pattern.search(html).group(0)
 
         save_data['teachingTaskId'] = int(target_url.split("=")[1])
 
@@ -115,7 +118,7 @@ class GetInfo:
         question_bank_url = question_bank_url_pattern.search(html).group(0)
         exercises_url = exercises_url_pattern.findall(html)
         exam_url = exam_url_pattern.search(html).group(0)
-        return [question_bank_url, exercises_url, exam_url, save_data]
+        return [question_bank_url, exercises_url, exam_url, disscuss_url, save_data]
 
     # 获取任务所有细节
     @staticmethod
@@ -140,4 +143,47 @@ class GetInfo:
         save_data['examReplyId'] = int(detials_url.split("=")[2].split("&")[0])
         return [save_url, questions_json, questions_detials, submit_url, save_data]
 
+    # 获取两个话题信息
+    @staticmethod
+    def get_discuss_detials(discuss_url):
+        topic_url_pattern = re.compile("student/bbs/manageDiscuss\\.do\\?[0-9]{13}&method=view&teachingTaskId=[0-9]+&discussId=[0-9]+&isModerator=false&isClick=true&forumId=[0-9]+")
+        reply_pattern = re.compile("<td\\swidth=\"100%\">[\w\W]+?</td>")
+        reply_input_pattern = re.compile("id=\"form1\">\\s+?(<input\\stype=\"hidden\"\\sname=\"[a-zA-Z]+?\"\\svalue=\"[a-zA-Z0-9]+?\"\\s/>\\s+?){5}")
+        reply_url_pattern = re.compile("student/bbs/manageDiscuss\\.do\\?[0-9]{13}&method=reply")
+        discuss_detials = []
 
+        # 话题页面
+        req = urllib.request.Request(hfut.Hfut.base_url + discuss_url, headers=hfut.Hfut.header)
+        html = hfut.Hfut.opener.open(req).read().decode('utf-8')
+        all_topics_url = topic_url_pattern.findall(html)
+
+        # 获取两条有回复的话题
+        topics_length = len(all_topics_url)
+        reply_count = 0
+        for i in range(0, topics_length - 1):
+            req = urllib.request.Request(hfut.Hfut.base_url + all_topics_url[i], headers=hfut.Hfut.header)
+            html = hfut.Hfut.opener.open(req).read().decode('utf-8')
+            if not reply_pattern.search(html) is None:
+                # 两次后停止
+                if reply_count == 2:
+                    break
+                reply_data ={}
+                reply = re.sub("<[\s\S]+?>|\s", "", reply_pattern.search(html).group(0))
+                # 答案为空时继续下一个话题
+                if reply == '':
+                    continue
+                reply_input = reply_input_pattern.search(html).group(0)
+                reply_input = list(filter(None, re.sub("\s|[<>/]+|input|type=\"hidden\"|id=\"form1\"|value=|name=\"[a-zA-Z]+?\"", "", reply_input).split("\"")))
+                reply_url = reply_url_pattern.search(html).group(0)
+
+                # 提交讨论参数
+                reply_data['discussId'] = reply_input[0]
+                reply_data['forumId'] = reply_input[1]
+                reply_data['type'] = reply_input[2]
+                reply_data['isModerator'] = reply_input[3]
+                reply_data['teachingTaskId'] = reply_input[4]
+                reply_data['content'] = reply
+
+                discuss_detials.append([reply_url, reply_data])
+                reply_count += 1
+        return discuss_detials
