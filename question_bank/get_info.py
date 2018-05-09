@@ -67,14 +67,14 @@ class GetInfo:
         # 下载到本地
         req = urllib.request.Request(course_resource_url + resource_id, headers=hfut.Hfut.header)
         download = hfut.Hfut.opener.open(req).read()
-        zip_file = open(zip_name, 'wb+')
+        zip_file = open("file/" + zip_name, 'wb+')
         zip_file.write(download)
 
         # 解压
-        zip_file = zipfile.ZipFile(zip_name)
-        file_name = zip_name.replace(".zip", "")
-        zip_file.extract("exercise.xls", file_name)
-        file_path = file_name + "/exercise.xls"
+        zip_file = zipfile.ZipFile("file/" + zip_name)
+        file_parent_path = "file/" + zip_name.replace(".zip", "")
+        zip_file.extract("exercise.xls", file_parent_path)
+        file_path = file_parent_path + "/exercise.xls"
         return file_path
 
     # 题目细节
