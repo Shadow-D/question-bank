@@ -107,7 +107,7 @@ class GetInfo:
         req = urllib.request.Request(hfut.Hfut.base_url + course_url, headers=hfut.Hfut.header)
         html = hfut.Hfut.opener.open(req).read().decode('utf-8')
         target_url = assignment_url_pattern.search(html).group(0)
-        disscuss_url = discuss_url_pattern.search(html).group(0)
+        discuss_url = discuss_url_pattern.search(html).group(0)
 
         save_data['teachingTaskId'] = int(target_url.split("=")[1])
 
@@ -118,7 +118,7 @@ class GetInfo:
         question_bank_url = question_bank_url_pattern.search(html).group(0)
         exercises_url = exercises_url_pattern.findall(html)
         exam_url = exam_url_pattern.search(html).group(0)
-        return [question_bank_url, exercises_url, exam_url, disscuss_url, save_data]
+        return [question_bank_url, exercises_url, exam_url, discuss_url, save_data]
 
     # 获取任务所有细节
     @staticmethod
