@@ -82,6 +82,7 @@ class SaveAnswer(hfut.Hfut):
                             if not answer == '':
                                 answer_flag = True
             return [save_data, answer_flag]
+        
         #  判断题
         elif question_type == 2:
             sheet = workbook.sheet_by_name("判断题")  # 对应的页
@@ -94,6 +95,7 @@ class SaveAnswer(hfut.Hfut):
                     if not answer == '':
                         answer_flag = True
             return [save_data, answer_flag]
+        
         # 多选题
         elif question_type == 4:
             sheet = workbook.sheet_by_name("多选题")  # 对应的页
@@ -117,6 +119,7 @@ class SaveAnswer(hfut.Hfut):
     # 保存答案
     @staticmethod
     def save_answer(save_url, save_data, question_json, config):
+        
         # 不覆盖原答案
         if config == '0':
             if question_json['complete'] is False:
@@ -124,6 +127,7 @@ class SaveAnswer(hfut.Hfut):
                 req = urllib.request.Request(hfut.Hfut.base_url + save_url, save_data, headers=hfut.Hfut.header)
                 result = json.loads(hfut.Hfut.opener.open(req).read().decode('utf-8'))
                 print(str(int(question_json['index']) + 1) + ": " + str(result))
+                
         # 覆盖原答案
         elif config == '1':
             save_data = urllib.parse.urlencode(save_data).encode('utf-8')
