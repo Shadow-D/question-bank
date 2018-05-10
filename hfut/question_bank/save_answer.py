@@ -128,6 +128,8 @@ class SaveAnswer:
             if question_json['complete'] is False:
                 result = json.loads(Hfut.opener.open(req).read().decode('utf-8'))
                 print(str(int(question_json['index']) + 1) + ": " + result['status'])
+            else：
+                print(str(int(question_json['index']) + 1) + ": " + "存在答案")
 
         # 覆盖原答案
         elif config == '1':
