@@ -9,47 +9,6 @@ from question_bank.hfut import Hfut
 
 class GetInfo:
 
-    # 选择课程
-    @staticmethod
-    def select_courses(courses):
-        number_pattern = re.compile("[0-9]")  # 检验数字
-        selection_list = [[], []]  # 选择的课程链接
-        courses_number = len(courses[0])  # 课程数量
-        if courses_number == 0:
-            print("\n没有试题库课程")
-            return
-
-        # 输出课程名,选择要完成的课程
-        print("\n选择课程，输入格式为 1,2,3 ")
-        print("0: 所有课程（默认）")
-        for i in range(0, courses_number):
-            print(str(i + 1) + ": " + courses[0][i])
-        number_input = input()
-        input_list = number_input.replace(" ", "").split(",")
-
-        # 判断输入的数据
-        for i in input_list:
-            if len(i) == 0:
-                return courses
-            elif not len(i) == 1:  # 长度一位
-                print("\n请检查长度")
-                return GetInfo.select_courses(courses)
-            elif not len(number_pattern.findall(i)) == 1:  # 数字
-                print("\n请输入数字")
-                return GetInfo.select_courses(courses)
-            elif int(i) > courses_number:  # 在选项中
-                print("\n请输入正确选项")
-                return GetInfo.select_courses(courses)
-
-        # 判断是否选择全部
-        for i in input_list:
-            if int(i) == 0:
-                return courses
-            else:
-                selection_list[0].append(courses[0][int(i) - 1])
-                selection_list[1].append(courses[1][int(i) - 1])
-        return selection_list
-
     # 下载题库
     @staticmethod
     def get_questions_bank(question_bank_url):
