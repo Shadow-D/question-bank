@@ -60,7 +60,7 @@ def select_operation():
 
 
 # 做题
-def assignment_run(assignments_url):
+def exercise_run(assignments_url):
     print("\n-----------------------------------------------")
     print("开始自测\n")
 
@@ -147,11 +147,11 @@ def run():
         print("课程" + name + "开始\n")
 
         if operation == '0':
-            assignment_run(assignments_url)
+            exercise_run(assignments_url)
             discuss_run(assignments_url)
             exam_run(assignments_url)
         elif operation == '1':
-            assignment_run(assignments_url)
+            exercise_run(assignments_url)
         elif operation == '2':
             discuss_run(assignments_url)
         elif operation == '3':
@@ -179,11 +179,11 @@ def run_continue(courses):
         print("课程" + name + "开始\n")
 
         if operation == '0':
-            assignment_run(assignments_url)
+            exercise_run(assignments_url)
             discuss_run(assignments_url)
             exam_run(assignments_url)
         elif operation == '1':
-            assignment_run(assignments_url)
+            exercise_run(assignments_url)
         elif operation == '2':
             discuss_run(assignments_url)
         elif operation == '3':
