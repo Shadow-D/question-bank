@@ -46,17 +46,17 @@ def select_operation():
     print("1: 刷题（默认）")
     print("2: 讨论")
     print("3：考试")
-    input_config = input()
+    input_operation = input()
 
-    if len(input_config) == 0:
+    if len(input_operation) == 0:
         return '1'
-    elif not len(input_config) == 1:  # 长度一位
+    elif not len(input_operation) == 1:  # 长度一位
         print("\n请检查长度")
         return select_operation()
-    elif not len(number_pattern.findall(input_config)) == 1:  # n或y
+    elif not len(number_pattern.findall(input_operation)) == 1:  # 选项
         print("\n请输入正确选项")
         return select_operation()
-    return input_config
+    return input_operation
 
 
 # 做题
