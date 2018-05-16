@@ -77,7 +77,10 @@ class GetInfo:
         # 题库和任务链接
         question_bank_url = question_bank_url_pattern.search(html).group(0)
         exercises_url = exercises_url_pattern.findall(html)
-        exam_url = exam_url_pattern.search(html).group(0)
+        if not exam_url_pattern.search(html) is None:
+            exam_url = exam_url_pattern.search(html).group(0)
+        else:
+            exam_url = None
         return [question_bank_url, exercises_url, exam_url, discuss_url, save_data]
 
     # 获取任务所有细节

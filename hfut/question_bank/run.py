@@ -28,13 +28,13 @@ def select_courses(courses):
             return courses
         elif not len(i) == 1:  # 长度一位
             print("\n请检查长度")
-            return GetInfo.select_courses(courses)
+            return select_courses(courses)
         elif not len(number_pattern.findall(i)) == 1:  # 数字
             print("\n请输入数字")
-            return GetInfo.select_courses(courses)
+            return select_courses(courses)
         elif int(i) > courses_number:  # 在选项中
             print("\n请输入正确选项")
-            return GetInfo.select_courses(courses)
+            return select_courses(courses)
 
     # 判断是否选择全部
     for i in input_list:
@@ -44,6 +44,7 @@ def select_courses(courses):
             selection_list[0].append(courses[0][int(i) - 1])
             selection_list[1].append(courses[1][int(i) - 1])
     return selection_list
+
 
 # 选择模式
 def set_config():
@@ -104,13 +105,17 @@ def exercise_run(assignments_url):
     print("\n-----------------------------------------------")
     print("开始自测\n")
 
+    length = len(assignments_url[1])  # 自测总个数
+    if length == 0:
+        print("\n自测任务已完成\n")
+        return
+
     get_config = set_config()
     config = get_config[0]  # 是否覆盖旧答案
     is_submit = get_config[1]  # 是否提交答案
     file_path = GetInfo.get_questions_bank(assignments_url[0])
     raw_save_data = assignments_url[4]
 
-    length = len(assignments_url[1])  # 自测总个数
     count = 0  # 当前次数
 
     # 每个自测
@@ -167,9 +172,40 @@ def discuss_run(assignments_url):
 def exam_run(assignments_url):
     print("\n-----------------------------------------------")
     print("开始考试\n")
-    print("暂未开始\n")
-    # exam_url = assignments_url[2]
-    pass
+
+    exam_url = assignments_url[2]
+    if exam_url is None:
+        print("\n考试任务已完成\n")
+        return
+
+    get_config = set_config()
+    config = get_config[0]  # 是否覆盖旧答案
+    submit_config = get_config[1]  # 是否提交答案
+
+    file_path = GetInfo.get_questions_bank(assignments_url[0])
+    raw_save_data = assignments_url[4]
+
+    assignment_detials = GetInfo.get_assignment_detials(exam_url, raw_save_data.copy())
+    save_url = assignment_detials[0]
+    questions_json = assignment_detials[1]
+    questions_detials = assignment_detials[2]
+    submit_url = assignment_detials[3]
+    base_save_data = assignment_detials[4]
+
+    # 保存每道题
+    for j in range(0, len(questions_json)):
+        save_data = base_save_data.copy()
+        save_config = config
+        save_detials = SaveAnswer.get_save_detials(file_path, questions_detials[j], questions_json[j], save_data)
+        save_data = save_detials[0]
+        answer_flag = save_detials[1]
+        if answer_flag is False:
+            submit_config = 'n'
+            save_config = '2'
+        SaveAnswer.save_answer(save_url, save_data, questions_json[j], save_config)
+
+    # 提交答案
+    SaveAnswer.submit_answer(submit_url, submit_config)
 
 
 # 运行程序

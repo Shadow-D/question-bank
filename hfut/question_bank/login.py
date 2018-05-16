@@ -23,7 +23,7 @@ class Login:
         print("\n请依次输入帐号和密码，输入q退出")
         user = input("帐号：")
         if user == 'q':
-            return
+            exit(0)
         password = input("密码：")
 
         # 获取post数据中的随机字符串
